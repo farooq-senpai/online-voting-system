@@ -1,52 +1,32 @@
-import random
-import string
-import smtplib
-from email.mime.text import MIMEText
-from flask import current_app
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
-# Simple in-memory storage for OTPs (In production, use Redis or DB with expiry)
-otp_storage = {} 
+SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY")
+FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL")
 
-def generate_otp():
-    """Generates a 6-digit OTP."""
-    return ''.join(random.choices(string.digits, k=6))
 
-def send_otp(email, otp):
-    print(f"[MOCK OTP] {email} -> {otp}")
-    return
-    """Sends OTP via email. Falls back to mock print if credentials missing."""
-    username = current_app.config['MAIL_USERNAME']
-    password = current_app.config['MAIL_PASSWORD']
-
-    if not username or not password:
-        print(f"[{'='*30}]")
-        print(f"MOCK OTP for {email}: {otp}")
-        print(f"[{'='*30}]")
-        return True
-
-    try:
-        msg = MIMEText(f'Your OTP for Online Voting System is: {otp}\n\nThis OTP is valid for 5 minutes.')
-        msg['Subject'] = 'Verify your Account - Online Voting System'
-        msg['From'] = username
-        msg['To'] = email
-
-        with smtplib.SMTP(current_app.config['MAIL_SERVER'], current_app.config['MAIL_PORT']) as server:
-            server.starttls()
-            server.login(username, password)
-            server.send_message(msg)
-        return True
-    except Exception as e:
-        print(f"Error sending email: {e}")
+def send_otp_email(to_email, otp):
+    if not SENDGRID_API_KEY or not FROM_EMAIL:
+        print("[SendGrid] Missing API key or sender email")
         return False
 
-def store_otp(email, otp):
-    """Stores OTP with the email."""
-    # TODO: Add timestamp for expiry check
-    otp_storage[email] = otp
+    message = Mail(
+        from_email=FROM_EMAIL,
+        to_emails=to_email,
+        subject="Your OTP Verification Code",
+        html_content=f"""
+        <h2>Online Voting System</h2>
+        <p>Your One-Time Password (OTP) is:</p>
+        <h1>{otp}</h1>
+        <p>This OTP is valid for 5 minutes.</p>
+        """
+    )
 
-def verify_otp_logic(email, user_otp):
-    """Verifies the provided OTP."""
-    if email in otp_storage and otp_storage[email] == user_otp:
-        del otp_storage[email] # Clear after use
+    try:
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        sg.send(message)
         return True
-    return False
+    except Exception as e:
+        print("[SendGrid ERROR]", e)
+        return False
