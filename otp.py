@@ -11,7 +11,9 @@ def generate_otp():
     """Generates a 6-digit OTP."""
     return ''.join(random.choices(string.digits, k=6))
 
-def send_otp(email, otp):
+def send_otp_email(email, otp):
+    print(f"[MOCK OTP] {email} -> {otp}")
+    return
     """Sends OTP via email. Falls back to mock print if credentials missing."""
     username = current_app.config['MAIL_USERNAME']
     password = current_app.config['MAIL_PASSWORD']
