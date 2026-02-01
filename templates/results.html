@@ -1,0 +1,4 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+{% extends 'base.html' %} {% block content %} {% for c in candidates %}
+<p>{{c.name}} : {{c.votes}}</p>
+{% endfor %} {% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2>Welcome Voter, {{ user.full_name }}</h2>
+            <p style="color: var(--text-muted);">Please select a political party to cast your secure vote.</p>
+        </div>
+        <div class="glass-container" style="padding: 10px 20px;">
+            Status: <span style="color: #4caf50; font-weight: bold;">Verified Voter</span>
+        </div>
+    </div>
+
+    {% if current_user.has_voted %}
+    <div class="alert error" style="text-align: center;">
+        You have already voted. You cannot vote again.
+    </div>
+    {% else %}
+    <div class="grid">
+        {% for party in parties %}
+        <div class="card" style="text-align: center;">
+            <div style="font-size: 3rem; margin-bottom: 1rem;">{{ party.symbol or '🏳️' }}</div>
+            <h3>{{ party.name }}</h3>
+            <form action="{{ url_for('voting.vote', party_id=party.id) }}" method="POST"
+                onsubmit="return confirm('Are you sure you want to vote for {{ party.name }}? This cannot be undone.');">
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Vote for {{
+                    party.name }}</button>
+            </form>
+        </div>
+        {% else %}
+        <div style="grid-column: 1/-1; text-align: center;">
+            <p>No parties registered yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

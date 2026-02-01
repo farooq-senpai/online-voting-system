@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="glass-container" style="max-width: 500px; width: 100%;">
+  <h2 style="text-align: center; margin-bottom: 2rem;">Create Account</h2>
+  <form method="POST">
+    <div class="form-group">
+      <label>Select Role</label>
+      <div style="display: flex; gap: 1rem;">
+        <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; color: white;">
+          <input type="radio" name="role" value="voter" checked onchange="togglePartyFields()" style="width: auto;">
+          Voter
+        </label>
+        <label style="cursor: pointer; display: flex; align-items: center; gap: 5px; color: white;">
+          <input type="radio" name="role" value="party" onchange="togglePartyFields()" style="width: auto;"> Political
+          Party
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="full_name">Full Name</label>
+      <input type="text" name="full_name" id="full_name" required>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" name="email" id="email" required>
+    </div>
+
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" id="password" required>
+    </div>
+
+    <!-- Party Specific Fields -->
+    <div id="party-fields" style="display: none; padding-top: 10px; border-top: 1px solid var(--glass-border);">
+      <div class="form-group">
+        <label for="party_name">Party Name</label>
+        <input type="text" name="party_name" id="party_name">
+      </div>
+
+      <div class="form-group">
+        <label for="party_symbol">Party Symbol (Concept/Text)</label>
+        <input type="text" name="party_symbol" id="party_symbol" placeholder="e.g. 🦁 Lion">
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" style="width: 100%;">Register</button>
+  </form>
+
+  <p style="text-align: center; margin-top: 1rem; color: var(--text-muted);">
+    Already have an account? <a href="{{ url_for('auth.login') }}" style="color: white;">Login here</a>
+  </p>
+
+  <script>
+    function togglePartyFields() {
+      const role = document.querySelector('input[name="role"]:checked').value;
+      const partyFields = document.getElementById('party-fields');
+      const partyInput = document.getElementById('party_name');
+
+      if (role === 'party') {
+        partyFields.style.display = 'block';
+        partyInput.setAttribute('required', 'required');
+      } else {
+        partyFields.style.display = 'none';
+        partyInput.removeAttribute('required');
+      }
+    }
+  </script>
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-text">
+  <h1 class="hero-title">Secure & Transparent Elections</h1>
+  <p class="hero-subtitle">Participate in the democratic process with our state-of-the-art online voting platform.</p>
+</div>
+
+<div class="grid" style="text-align: center; max-width: 900px;">
+  <div class="card">
+    <h3>Fair Voting</h3>
+    <p>One person, one vote. Secured by advanced encryption and verification.</p>
+  </div>
+  <div class="card">
+    <h3>Real-time Results</h3>
+    <p>Watch the election unfold with live updates from the political parties.</p>
+  </div>
+  <div class="card">
+    <h3>Secure Access</h3>
+    <p>Two-factor authentication via Email OTP ensures only valid voters participate.</p>
+  </div>
+</div>
+
+<div style="margin-top: 3rem; text-align: center;">
+  {% if not current_user.is_authenticated %}
+  <a href="{{ url_for('auth.login') }}" class="btn btn-primary" style="margin-right: 1rem;">Login to Vote</a>
+  <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register New Account</a>
+  {% else %}
+  <a href="{{ url_for('voting.voter_dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <div>
+            <h2>Party Dashboard: {{ my_party.name }} {{ my_party.symbol }}</h2>
+            <p style="color: var(--text-muted);">Real-time election results.</p>
+        </div>
+        <div style="text-align: right;">
+            <button onclick="window.location.reload()" class="btn btn-secondary">🔄 Refresh Results</button>
+        </div>
+    </div>
+
+    <!-- My Performance -->
+    <div class="glass-container" style="margin-bottom: 2rem; background: rgba(50, 200, 50, 0.1);">
+        <h3 style="margin-bottom: 0;">Your Total Votes</h3>
+        <div style="font-size: 4rem; font-weight: bold;">{{ my_party.vote_count }}</div>
+    </div>
+
+    <h3>All Parties (Live Standings)</h3>
+    <div class="glass-container" style="padding: 0;">
+        <table style="width: 100%; border-collapse: collapse; color: white;">
+            <thead>
+                <tr style="border-bottom: 1px solid var(--glass-border); text-align: left;">
+                    <th style="padding: 1rem;">Rank</th>
+                    <th style="padding: 1rem;">Party Name</th>
+                    <th style="padding: 1rem;">Symbol</th>
+                    <th style="padding: 1rem; text-align: right;">Votes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set sorted_parties = all_parties | sort(attribute='vote_count', reverse=True) %}
+                {% for party in sorted_parties %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem;">#{{ loop.index }}</td>
+                    <td style="padding: 1rem;">
+                        {{ party.name }}
+                        {% if party.id == my_party.id %}
+                        <span
+                            style="background: var(--primary-color); padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-left: 5px;">YOU</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 1rem;">{{ party.symbol }}</td>
+                    <td style="padding: 1rem; text-align: right; font-weight: bold; font-size: 1.1rem;">{{
+                        party.vote_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Simple polling for real-time feel without big frameworks -->
+<script>
+    setTimeout(function () {
+        window.location.reload();
+    }, 10000); // Auto-refresh every 10 seconds
+</script>
+{% endblock %}
