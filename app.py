@@ -7,6 +7,12 @@ from voting import voting as voting_blueprint
 
 app = Flask(__name__)
 app.config.from_object(Config)
+import os
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"sqlite:///{os.path.join(BASE_DIR, 'database.db')}"
+)
 
 db.init_app(app)
 
